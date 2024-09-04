@@ -10,6 +10,10 @@ class CurrencyRate {
 
     const API_ENDPOINT = 'https://api.exchangerate-api.com/v4/latest/';
 
+    public function __construct() {
+        $this->run();
+    }
+
     public function run() {
         add_shortcode('currency_rate', [$this, 'handle_shortcode']);
     }
@@ -17,34 +21,26 @@ class CurrencyRate {
     public function handle_shortcode($atts) {
         $atts = shortcode_atts(
             [
-                'currency' => 'RUB',
+                'currency_a' => 'USD',
+                'currency_b' => 'EUR',
             ],
             $atts,
             'currency_rate'
         );
 
-        $usd_rate = $this->get_currency_rate('USD', $atts['currency']);
-        $eur_rate = $this->get_currency_rate('EUR', $atts['currency']);
+        $rate = $this->get_currency_rate($atts['currency_a'], $atts['currency_b']);
 
-        if (is_string($usd_rate) || is_string($eur_rate)) {
+        if (is_string($rate)) {
             return __('Ошибка получения данных.', 'currency-rate');
         }
 
         return sprintf(
             '<div class="currency-rate-container">
-                %s<br>
-                %s
+                Курс %s/%s: %s
             </div>',
-            sprintf(
-                __('Курс USD/%s: %s', 'currency-rate'),
-                esc_html($atts['currency']),
-                esc_html($usd_rate)
-            ),
-            sprintf(
-                __('Курс EUR/%s: %s', 'currency-rate'),
-                esc_html($atts['currency']),
-                esc_html($eur_rate)
-            )
+            esc_html($atts['currency_a']),
+            esc_html($atts['currency_b']),
+            esc_html($rate)
         );
     }
 
@@ -52,7 +48,7 @@ class CurrencyRate {
         $response = wp_remote_get(self::API_ENDPOINT . strtoupper($currency_a));
 
         if (is_wp_error($response)) {
-            return false;
+            return __('Ошибка запроса.', 'currency-rate');
         }
 
         $body = wp_remote_retrieve_body($response);
