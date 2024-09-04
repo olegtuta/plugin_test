@@ -1,0 +1,8 @@
+.currency-rate-container {
+    background-color: #f0f0f0;
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 30px;
+    display: inline-block;
+}
