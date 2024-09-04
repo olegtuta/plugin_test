@@ -28,8 +28,7 @@ $actions = [
     [
         'hook' => 'plugins_loaded',
         'trigger' => function () {
-            $plugin = new CurrencyRate();
-            $plugin->run();
+            new CurrencyRate();
         },
     ],
 ];
